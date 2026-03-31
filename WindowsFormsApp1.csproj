@@ -181,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="backend\Dump20260317.sql" />
+    <Content Include="backend\Dump20260330 %281%29.sql" />
     <Content Include="images\chocolate_chip.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
