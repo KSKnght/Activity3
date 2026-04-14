@@ -10,6 +10,8 @@ namespace WindowsFormsApp1.DTOs
         public decimal AmountTendered { get; set; }
         public decimal Change { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int AddedBy { get; set; }
+        public string CashierName { get; set; }
         public List<OrderItemDTO> OrderItems { get; set; } = new List<OrderItemDTO>();
     }
 }

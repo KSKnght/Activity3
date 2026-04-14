@@ -48,6 +48,7 @@ namespace WindowsFormsApp1.winforms
             textBox1.TextChanged += textBox1_TextChanged;
             btnAddUser.Click += btnAddUser_Click;
             btnAddProduct.Click += btnAddProduct_Click;
+            btnReports.Click += BtnReports_Click;
 
             // Set up role-based visibility
             if (_loggedInRole == "cashier")
@@ -59,6 +60,15 @@ namespace WindowsFormsApp1.winforms
             else
             {
                 pnlUserProducts.Visible = true;
+            }
+
+            if (_loggedInRole == "admin")
+            {
+                btnReports.Visible = true;
+            }
+            else
+            {
+                btnReports.Visible = false;
             }
 
             // Load initial tab
@@ -303,7 +313,7 @@ namespace WindowsFormsApp1.winforms
         {
             if (_orderItems.Count == 0)
             {
-                MessageBox.Show("Please add items to the order before saving.", "Empty Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No items added to the transaction.", "Empty Order", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -335,6 +345,10 @@ namespace WindowsFormsApp1.winforms
             {
                 MessageBox.Show($"Transaction saved successfully!\nOrder ID: {order.Id}\nTotal: {order.TotalAmount:C2}\nChange: {order.Change:C2}",
                     "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Open receipt report form - pass logged-in username as cashier name
+                ReceiptReportForm receiptForm = new ReceiptReportForm(order.Id, _loggedInUsername);
+                receiptForm.ShowDialog();
 
                 ClearTransaction();
             }
@@ -410,6 +424,31 @@ namespace WindowsFormsApp1.winforms
             {
                 this.Close();
             }
+        }
+        private void BtnReports_Click(object sender, EventArgs e)
+        {
+            LoadReportsTab();
+        }
+
+        private void LoadReportsTab()
+        {
+            pnlTransaction.Visible = false;
+            pnlUserProducts.Visible = false;
+            pnlReports.Visible = true;
+
+            UpdateTabHighlight(btnReports);
+        }
+
+        private void ShowTransactionReceipt(int orderId)
+        {
+            ReceiptReportForm receiptForm = new ReceiptReportForm(orderId);
+            receiptForm.ShowDialog();
+        }
+
+        private void BtnGenerateReport_Click(object sender, EventArgs e)
+        {
+            AllOrdersReportForm reportForm = new AllOrdersReportForm();
+            reportForm.ShowDialog();
         }
     }
 }

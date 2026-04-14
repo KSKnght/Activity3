@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Drawing;
+using WindowsFormsApp1.DTOs;
 
 namespace WindowsFormsApp1
 {
@@ -202,13 +204,14 @@ namespace WindowsFormsApp1
                     // Create order items with base_price
                     foreach (var item in order.OrderItems)
                     {
-                        string itemQuery = "INSERT INTO order_item (order_id, product_id, size, qty, base_price) VALUES (@orderId, @productId, @size, @qty, @basePrice)";
+                        string itemQuery = "INSERT INTO order_item (order_id, product_id, product_name, size, qty, base_price) VALUES(@orderId, @productId, @productName, @size, @qty, @basePrice)";
                         MySqlCommand itemCmd = new MySqlCommand(itemQuery, conn);
                         itemCmd.Parameters.AddWithValue("@orderId", orderId);
                         itemCmd.Parameters.AddWithValue("@productId", item.ProductId);
                         itemCmd.Parameters.AddWithValue("@size", item.Size);
                         itemCmd.Parameters.AddWithValue("@qty", item.Quantity);
                         itemCmd.Parameters.AddWithValue("@basePrice", item.UnitPrice);
+                        itemCmd.Parameters.AddWithValue("@productName", item.ProductName);
 
                         itemCmd.ExecuteNonQuery();
                     }
@@ -427,6 +430,156 @@ namespace WindowsFormsApp1
                 System.Windows.Forms.MessageBox.Show($"Error deleting product: {ex.Message}");
                 return false;
             }
+        }
+
+        public Order GetOrderWithItems(int orderId)
+        {
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_connStr))
+                {
+                    conn.Open();
+                    string query = @"
+                        SELECT 
+                            o.id AS Id,
+                            o.total_amount AS TotalAmount,
+                            o.amount_tendered AS AmountTendered,
+                            o.change AS ChangeAmount,
+                            o.created_at AS CreatedAt,
+                            u.name AS CashierName
+                        FROM `order` o
+                        LEFT JOIN user u ON o.added_by = u.id
+                        WHERE o.id = @orderId";
+                    
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@orderId", orderId);
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        var order = new Order
+                        {
+                            Id = reader.GetInt32("Id"),
+                            TotalAmount = reader.GetDecimal("TotalAmount"),
+                            AmountTendered = reader.GetDecimal("AmountTendered"),
+                            Change = reader.GetDecimal("ChangeAmount")
+                        };
+                        reader.Close();
+
+                        // Get order items
+                        string itemQuery = @"
+                            SELECT id, product_id, product_name, qty, base_price, size
+                            FROM order_item
+                            WHERE order_id = @orderId";
+                        
+                        MySqlCommand itemCmd = new MySqlCommand(itemQuery, conn);
+                        itemCmd.Parameters.AddWithValue("@orderId", orderId);
+                        MySqlDataReader itemReader = itemCmd.ExecuteReader();
+
+                        while (itemReader.Read())
+                        {
+                            order.OrderItems.Add(new OrderItem
+                            {
+                                Id = itemReader.GetInt32("id"),
+                                ProductId = itemReader.GetInt32("product_id"),
+                                ProductName = itemReader.GetString("product_name"),
+                                Quantity = itemReader.GetInt32("qty"),
+                                UnitPrice = itemReader.GetDecimal("base_price"),
+                                Size = itemReader.GetString("size")
+                            });
+                        }
+                        itemReader.Close();
+                        return order;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show($"Error retrieving order: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        public DataTable GetAllOrdersForReport()
+        {
+            DataTable dt = new DataTable();
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_connStr))
+                {
+                    conn.Open();
+                    string query = @"
+                        SELECT 
+                            o.id as TransactionId,
+                            o.created_at as TransactionDate,
+                            o.total_amount as TotalAmount,
+                            u.name as CashierName
+                        FROM `order` o
+                        LEFT JOIN user u ON o.added_by = u.id
+                        ORDER BY o.created_at DESC";
+                    
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                    adapter.Fill(dt);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show($"Error retrieving orders: {ex.Message}");
+            }
+
+            return dt;
+        }
+
+        public List<OrderDTO> GetAllOrdersForReportDTO()
+        {
+            List<OrderDTO> orders = new List<OrderDTO>();
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_connStr))
+                {
+                    conn.Open();
+                    string query = @"
+                        SELECT 
+                            o.id as Id,
+                            o.created_at as CreatedAt,
+                            o.total_amount as TotalAmount,
+                            o.amount_tendered as AmountTendered,
+                            o.change as 'Change',
+                            o.added_by as AddedBy,
+                            COALESCE(u.name, 'N/A') as CashierName
+                        FROM `order` o
+                        LEFT JOIN user u ON o.added_by = u.id
+                        ORDER BY o.created_at DESC";
+                    
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        orders.Add(new OrderDTO
+                        {
+                            Id = reader.GetInt32("Id"),
+                            CreatedAt = reader.GetDateTime("CreatedAt"),
+                            TotalAmount = reader.GetDecimal("TotalAmount"),
+                            AmountTendered = reader.GetDecimal("AmountTendered"),
+                            Change = reader.GetDecimal("Change"),
+                            AddedBy = reader.IsDBNull(reader.GetOrdinal("AddedBy")) ? 0 : reader.GetInt32("AddedBy"),
+                            CashierName = reader.GetString("CashierName")
+                        });
+                    }
+                    reader.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show($"Error retrieving orders: {ex.Message}");
+            }
+
+            return orders;
         }
     }
 }

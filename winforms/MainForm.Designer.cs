@@ -42,6 +42,7 @@
             this.btnTransaction = new System.Windows.Forms.Button();
             this.btnUsers = new System.Windows.Forms.Button();
             this.btnProducts = new System.Windows.Forms.Button();
+            this.btnReports = new System.Windows.Forms.Button();
             this.pContent = new System.Windows.Forms.Panel();
             this.pnlTransaction = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -73,6 +74,9 @@
             this.panelActions = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAddUser = new System.Windows.Forms.Button();
             this.btnAddProduct = new System.Windows.Forms.Button();
+            this.pnlReports = new System.Windows.Forms.Panel();
+            this.lblReportsTitle = new System.Windows.Forms.Label();
+            this.btnGenerateReport = new System.Windows.Forms.Button();
             this.pHeader.SuspendLayout();
             this.fpTabs.SuspendLayout();
             this.pContent.SuspendLayout();
@@ -89,6 +93,7 @@
             this.tabProducts.SuspendLayout();
             this.tabUsers.SuspendLayout();
             this.panelActions.SuspendLayout();
+            this.pnlReports.SuspendLayout();
             this.SuspendLayout();
             // 
             // pHeader
@@ -150,6 +155,7 @@
             this.fpTabs.Controls.Add(this.btnTransaction);
             this.fpTabs.Controls.Add(this.btnUsers);
             this.fpTabs.Controls.Add(this.btnProducts);
+            this.fpTabs.Controls.Add(this.btnReports);
             this.fpTabs.Dock = System.Windows.Forms.DockStyle.Top;
             this.fpTabs.Location = new System.Drawing.Point(0, 60);
             this.fpTabs.Name = "fpTabs";
@@ -208,10 +214,28 @@
             this.btnProducts.Text = "Products";
             this.btnProducts.UseVisualStyleBackColor = false;
             // 
+            // btnReports
+            // 
+            this.btnReports.AutoSize = true;
+            this.btnReports.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(120)))), ((int)(((byte)(100)))));
+            this.btnReports.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnReports.FlatAppearance.BorderSize = 0;
+            this.btnReports.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReports.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold);
+            this.btnReports.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.btnReports.Location = new System.Drawing.Point(350, 8);
+            this.btnReports.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
+            this.btnReports.Name = "btnReports";
+            this.btnReports.Size = new System.Drawing.Size(114, 43);
+            this.btnReports.TabIndex = 4;
+            this.btnReports.Text = "Reports";
+            this.btnReports.UseVisualStyleBackColor = false;
+            // 
             // pContent
             // 
             this.pContent.Controls.Add(this.pnlTransaction);
             this.pContent.Controls.Add(this.pnlUserProducts);
+            this.pContent.Controls.Add(this.pnlReports);
             this.pContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pContent.Location = new System.Drawing.Point(0, 113);
             this.pContent.Name = "pContent";
@@ -624,6 +648,44 @@
             this.btnAddProduct.UseVisualStyleBackColor = false;
             this.btnAddProduct.Visible = false;
             // 
+            // pnlReports
+            // 
+            this.pnlReports.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(3)))), ((int)(((byte)(53)))), ((int)(((byte)(44)))));
+            this.pnlReports.Controls.Add(this.lblReportsTitle);
+            this.pnlReports.Controls.Add(this.btnGenerateReport);
+            this.pnlReports.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlReports.Location = new System.Drawing.Point(5, 5);
+            this.pnlReports.Name = "pnlReports";
+            this.pnlReports.Size = new System.Drawing.Size(1013, 516);
+            this.pnlReports.TabIndex = 8;
+            this.pnlReports.Visible = false;
+            // 
+            // lblReportsTitle
+            // 
+            this.lblReportsTitle.AutoSize = true;
+            this.lblReportsTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold);
+            this.lblReportsTitle.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblReportsTitle.Location = new System.Drawing.Point(20, 20);
+            this.lblReportsTitle.Name = "lblReportsTitle";
+            this.lblReportsTitle.Size = new System.Drawing.Size(200, 26);
+            this.lblReportsTitle.TabIndex = 0;
+            this.lblReportsTitle.Text = "Generate Reports";
+            // 
+            // btnGenerateReport
+            // 
+            this.btnGenerateReport.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(120)))), ((int)(((byte)(100)))));
+            this.btnGenerateReport.FlatAppearance.BorderSize = 0;
+            this.btnGenerateReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnGenerateReport.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.btnGenerateReport.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.btnGenerateReport.Location = new System.Drawing.Point(20, 70);
+            this.btnGenerateReport.Name = "btnGenerateReport";
+            this.btnGenerateReport.Size = new System.Drawing.Size(250, 50);
+            this.btnGenerateReport.TabIndex = 0;
+            this.btnGenerateReport.Text = "All Orders Report";
+            this.btnGenerateReport.UseVisualStyleBackColor = false;
+            this.btnGenerateReport.Click += new System.EventHandler(this.BtnGenerateReport_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -654,6 +716,8 @@
             this.tabProducts.ResumeLayout(false);
             this.tabUsers.ResumeLayout(false);
             this.panelActions.ResumeLayout(false);
+            this.pnlReports.ResumeLayout(false);
+            this.pnlReports.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -699,5 +763,9 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panelLeft;
         private System.Windows.Forms.FlowLayoutPanel ProductPanel;
+        private System.Windows.Forms.Button btnReports;
+        private System.Windows.Forms.Panel pnlReports;
+        private System.Windows.Forms.Label lblReportsTitle;
+        private System.Windows.Forms.Button btnGenerateReport;
     }
 }
